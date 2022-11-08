@@ -63,9 +63,18 @@ public class Service {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public ObservableList<RowTable> getValuesOfTable() {
+    public ObservableList<RowTable> getObservableList() {
         ObservableList<RowTable> list = FXCollections.observableArrayList();
+        RowTable salesVolumeRow = new RowTable(0, 0, 0, 0);
+        RowTable retailsPriceRow = new RowTable(0, 0, 0, 0);
+        RowTable costOfGoodsRow = new RowTable(0, 0, 0, 0);
+        RowTable grossProfitRow = new RowTable(0, 0, 0, 0);
+        salesVolumeRow.setValue("Sales Volume");
+        retailsPriceRow.setValue("Retails Price");
+        costOfGoodsRow.setValue("Cost of Goods");
+        grossProfitRow.setValue("Gross Profit");
 
+        list.addAll(List.of(salesVolumeRow, retailsPriceRow, costOfGoodsRow, grossProfitRow));
         return list;
     }
     //        double totalGrossProfit = grossProfitReader + grossProfitTime + grossProfitPeople + grossProfitNational;

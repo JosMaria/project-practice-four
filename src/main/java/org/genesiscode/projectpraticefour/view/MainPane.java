@@ -18,7 +18,7 @@ public class MainPane {
     private static MainPane mainPane;
     private Service service;
     private VBox pane;
-    private TableView<Information> table;
+    private TableView<RowTable> table;
 
     private MainPane() {
         service = new Service();
@@ -49,12 +49,13 @@ public class MainPane {
     private void buildTable() {
         table = new TableView<>();
         table.getColumns().addAll(List.of(
-                column("Reader's Digest", "salesVolume", 100),
-                column("Time", "retailPrice", 100),
-                column("People", "costOfGoods", 100),
-                column("National geographic", "grossProfit", 150)
+                column("", "value", 120),
+                column("Reader's Digest", "readerMagazine", 100),
+                column("Time", "timeMagazine", 100),
+                column("People", "peopleMagazine", 100),
+                column("National geographic", "nationalMagazine", 150)
         ));
-        table.setItems(null);
+        table.setItems(service.getObservableList());
     }
 
     private <U, T> TableColumn<U, T> column(String titleColumn, String property, double prefSize) {
