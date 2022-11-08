@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.ToDoubleFunction;
 
 import static org.genesiscode.projectpraticefour.service.Magazine.*;
 
@@ -34,30 +35,31 @@ public class Service {
     }
 
     private double getAverageSalesVolumeOfReader(List<Row> rows, Magazine magazine) {
+        ToDoubleFunction<Row> toDouble = row ->
+                switch (magazine) {
+                    case READER_DIGEST -> row.getReaderMagazine();
+                    case TIME -> row.getTimeMagazine();
+                    case PEOPLE -> row.getPeopleMagazine();
+                    case NATIONAL_GEOGRAPHIC -> row.getNationalMagazine();
+                };
+
         return rows.stream()
-                .mapToDouble(row -> getValuesGivenMagazine(row, magazine))
+                .mapToDouble(toDouble)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private double getValuesGivenMagazine(Row row, Magazine magazine) {
-         return switch (magazine) {
-            case READER_DIGEST -> row.getReaderMagazine();
-            case TIME -> row.getTimeMagazine();
-            case PEOPLE -> row.getPeopleMagazine();
-            case NATIONAL_GEOGRAPHIC -> row.getNationalMagazine();
-        };
     }
 
     public static void main(String[] args) throws IOException {
         Service service = new Service();
         List<Row> lines = service.readSalesData();
+
+        /* ========== VALUES CALCULATED ========== */
         double averageReader = service.getAverageSalesVolumeOfReader(lines, READER_DIGEST);
-        double averageTimes = service.getAverageSalesVolumeOfReader(lines, TIME);
+        double averageTime = service.getAverageSalesVolumeOfReader(lines, TIME);
         double averagePeople = service.getAverageSalesVolumeOfReader(lines, PEOPLE);
         double averageNational = service.getAverageSalesVolumeOfReader(lines, NATIONAL_GEOGRAPHIC);
 
-        /* ========== INPUT DATA ========== */
+        /* ========== INPUT DATA FOR THE USER ========== */
         double retailPriceReaderMagazine = 4.95;
         double retailPriceTimeMagazine = 7.95;
         double retailPricePeopleMagazine = 3.95;
@@ -68,13 +70,22 @@ public class Service {
         double costOfGoodsPeopleMagazine = 1.95;
         double costOfGoodsNationalMagazine = 2.40;
 
-        Information informationReader = new Information(averageReader, retailPriceReaderMagazine, costOfGoodsReaderMagazine, 0);
-        Information informationTimes = new Information(averageTimes, retailPriceTimeMagazine, costOfGoodsTimeMagazine, 0);
-        Information informationPeople = new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, 0);
-        Information informationNational = new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, 0);
+        double grossProfitReader = averageReader * (retailPriceReaderMagazine - costOfGoodsReaderMagazine);
+        double grossProfitTime = averageTime * (retailPriceTimeMagazine - costOfGoodsTimeMagazine);
+        double grossProfitPeople = averagePeople * (retailPricePeopleMagazine - costOfGoodsPeopleMagazine);
+        double grossProfitNational = averageNational * (retailPriceNationalMagazine - costOfGoodsNationalMagazine);
+
+        Information informationReader = new Information(averageReader, retailPriceReaderMagazine, costOfGoodsReaderMagazine, grossProfitReader);
+        Information informationTimes = new Information(averageTime, retailPriceTimeMagazine, costOfGoodsTimeMagazine, grossProfitTime);
+        Information informationPeople = new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, grossProfitPeople);
+        Information informationNational = new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, grossProfitNational);
+
+        double totalGrossProfit = grossProfitReader + grossProfitTime + grossProfitPeople + grossProfitNational;
+
         System.out.println(informationReader);
         System.out.println(informationTimes);
         System.out.println(informationPeople);
         System.out.println(informationNational);
+        System.out.println(totalGrossProfit);
     }
 }
