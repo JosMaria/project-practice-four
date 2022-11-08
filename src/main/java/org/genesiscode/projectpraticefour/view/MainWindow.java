@@ -2,8 +2,6 @@ package org.genesiscode.projectpraticefour.view;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainWindow extends Application {
@@ -12,7 +10,7 @@ public class MainWindow extends Application {
 
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(new VBox(new Label("Jose Maria")));
+        Scene scene = new Scene(MainPane.getInstance().getPane());
         stage.setScene(scene);
         stage.setTitle(TITLE);
         stage.show();

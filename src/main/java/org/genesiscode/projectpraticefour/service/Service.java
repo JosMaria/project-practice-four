@@ -1,5 +1,9 @@
 package org.genesiscode.projectpraticefour.service;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.genesiscode.projectpraticefour.view.RowTable;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,11 +15,21 @@ import static org.genesiscode.projectpraticefour.service.Magazine.*;
 
 public class Service {
 
-    private List<Row> readSalesData() throws IOException {
+    private List<Row> salesDataList;
+
+    public Service() {
+        try {
+            readSalesData();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void readSalesData() throws IOException {
         String route = "src/main/resources/sales-data.txt";
         List<String> lines = Files.readAllLines(Paths.get(route));
 
-        return lines.stream()
+        salesDataList = lines.stream()
                 .skip(2)
                 .map(this::create)
                 .toList();
@@ -49,15 +63,19 @@ public class Service {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public static void main(String[] args) throws IOException {
-        Service service = new Service();
-        List<Row> lines = service.readSalesData();
+    public ObservableList<RowTable> getValuesOfTable() {
+        ObservableList<RowTable> list = FXCollections.observableArrayList();
 
+        return list;
+    }
+    //        double totalGrossProfit = grossProfitReader + grossProfitTime + grossProfitPeople + grossProfitNational;
+
+    private List<Information> getListOfInformation() {
         /* ========== VALUES CALCULATED ========== */
-        double averageReader = service.getAverageSalesVolumeOfReader(lines, READER_DIGEST);
-        double averageTime = service.getAverageSalesVolumeOfReader(lines, TIME);
-        double averagePeople = service.getAverageSalesVolumeOfReader(lines, PEOPLE);
-        double averageNational = service.getAverageSalesVolumeOfReader(lines, NATIONAL_GEOGRAPHIC);
+        double averageReader = getAverageSalesVolumeOfReader(salesDataList, READER_DIGEST);
+        double averageTime = getAverageSalesVolumeOfReader(salesDataList, TIME);
+        double averagePeople = getAverageSalesVolumeOfReader(salesDataList, PEOPLE);
+        double averageNational = getAverageSalesVolumeOfReader(salesDataList, NATIONAL_GEOGRAPHIC);
 
         /* ========== INPUT DATA FOR THE USER ========== */
         double retailPriceReaderMagazine = 4.95;
@@ -75,17 +93,11 @@ public class Service {
         double grossProfitPeople = averagePeople * (retailPricePeopleMagazine - costOfGoodsPeopleMagazine);
         double grossProfitNational = averageNational * (retailPriceNationalMagazine - costOfGoodsNationalMagazine);
 
-        Information informationReader = new Information(averageReader, retailPriceReaderMagazine, costOfGoodsReaderMagazine, grossProfitReader);
-        Information informationTimes = new Information(averageTime, retailPriceTimeMagazine, costOfGoodsTimeMagazine, grossProfitTime);
-        Information informationPeople = new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, grossProfitPeople);
-        Information informationNational = new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, grossProfitNational);
-
-        double totalGrossProfit = grossProfitReader + grossProfitTime + grossProfitPeople + grossProfitNational;
-
-        System.out.println(informationReader);
-        System.out.println(informationTimes);
-        System.out.println(informationPeople);
-        System.out.println(informationNational);
-        System.out.println(totalGrossProfit);
+        return List.of(
+                new Information(averageReader, retailPriceReaderMagazine, costOfGoodsReaderMagazine, grossProfitReader),
+                new Information(averageTime, retailPriceTimeMagazine, costOfGoodsTimeMagazine, grossProfitTime),
+                new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, grossProfitPeople),
+                new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, grossProfitNational)
+        );
     }
 }

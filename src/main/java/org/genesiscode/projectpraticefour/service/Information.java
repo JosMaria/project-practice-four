@@ -2,6 +2,7 @@ package org.genesiscode.projectpraticefour.service;
 
 public class Information {
 
+    private String title;
     private double salesVolume;
     private double retailPrice;
     private double costOfGoods;
@@ -12,6 +13,14 @@ public class Information {
         this.retailPrice = retailPrice;
         this.costOfGoods = costOfGoods;
         this.grossProfit = grossProfit;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public double getSalesVolume() {
