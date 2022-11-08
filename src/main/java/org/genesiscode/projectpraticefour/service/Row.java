@@ -48,7 +48,7 @@ public class Row {
 
     @Override
     public String toString() {
-        String string =
+        String row =
             """
                 {
                    readerMagazine: %s,
@@ -57,6 +57,6 @@ public class Row {
                    nationalMagazine: %s
                 }
             """;
-        return String.format(string,  readerMagazine, timeMagazine, peopleMagazine, nationalMagazine);
+        return String.format(row,  readerMagazine, timeMagazine, peopleMagazine, nationalMagazine);
     }
 }
