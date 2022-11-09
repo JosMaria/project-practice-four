@@ -7,6 +7,7 @@ import org.genesiscode.projectpraticefour.view.RowTable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
@@ -108,5 +109,51 @@ public class Service {
                 new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, grossProfitPeople),
                 new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, grossProfitNational)
         );
+    }
+
+    private void convertMatrix(List<Information> informationList) {
+        List<List<Double>> list = List.of(List.of(), List.of(), List.of(), List.of());
+        int index = 0;
+        for (Information inf : informationList) {
+            List<Double> element = list.get(index);
+            element.addAll(List.of(inf.getSalesVolume(), inf.getRetailPrice(), inf.getCostOfGoods(), inf.getGrossProfit()));
+            index++;
+        }
+
+        for (List<Double> element : list) {
+            for (double value : element) {
+                System.out.printf("%s  ", value);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+
+
+        /*String[][] matrix = {
+                {"sv", "rp", "cp", "gp"},
+                {"sv", "rp", "cp", "gp"},
+                {"sv", "rp", "cp", "gp"},
+                {"sv", "rp", "cp", "gp"}
+        };
+
+        List<List<String>> matrixInput = List.of();
+
+        String[][] result = new String[matrix.length][matrix[0].length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < matrix[i].length; j++) {
+                result[j][i] = matrix[i][j];
+            }
+        }
+
+        for (int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < matrix[i].length; j++) {
+                System.out.print(result[i][j] + "  ");
+            }
+            System.out.println();
+        }*/
+
     }
 }
