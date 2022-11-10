@@ -7,7 +7,6 @@ import org.genesiscode.projectpraticefour.view.RowTable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
@@ -30,13 +29,13 @@ public class Service {
 
     public Service() {
         try {
-            readSalesData();
+            readFileOfSalesData();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void readSalesData() throws IOException {
+    private void readFileOfSalesData() throws IOException {
         String route = "src/main/resources/sales-data.txt";
         List<String> lines = Files.readAllLines(Paths.get(route));
 

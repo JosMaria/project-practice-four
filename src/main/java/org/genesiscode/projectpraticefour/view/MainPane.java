@@ -18,9 +18,10 @@ public class MainPane {
     private VBox pane;
     private TableView<RowTable> table;
     private Label lblRetailPrice, lblCostOfGoods, lblReader, lblTime, lblPeople, lblNational;
+    private Label lblTotalGrossProfit, lblValueTotalGrossProfit;
     private TextField fieldRetailPriceReader, fieldRetailPriceTime, fieldRetailPricePeople, fieldRetailPriceNational,
             fieldCostOfGoodsReader, fieldCostOfGoodsTime, fieldCostOfGoodsPeople, fieldCostOfGoodsNational;
-    private Button btnLoad;
+    private Button btnLoad, btnStart;
 
     private MainPane() {
         service = new Service();
@@ -41,6 +42,8 @@ public class MainPane {
         buildTable();
         btnLoad = new Button("Cargar");
         btnLoad.setOnAction(actionEvent -> btn_click_load());
+        btnStart = new Button("Comenzar");
+        btnStart.setOnAction(actionEvent -> System.out.println("comenzar"));
     }
 
     private void btn_click_load() {
@@ -74,7 +77,12 @@ public class MainPane {
         retailPricePane.setAlignment(Pos.CENTER_RIGHT);
         HBox costOfGoodsPane = new HBox(10, lblCostOfGoods, fieldCostOfGoodsReader, fieldCostOfGoodsTime, fieldCostOfGoodsPeople, fieldCostOfGoodsNational);
         costOfGoodsPane.setAlignment(Pos.CENTER_RIGHT);
-        VBox inputPane = new VBox(10, titlesPane, retailPricePane, costOfGoodsPane, btnLoad);
+        HBox buttonsPane = new HBox(20, btnLoad, btnStart);
+        buttonsPane.setAlignment(Pos.CENTER_RIGHT);
+        buttonsPane.setPadding(new Insets(10));
+        HBox resultsPane = new HBox(10, lblTotalGrossProfit, lblValueTotalGrossProfit);
+        resultsPane.setAlignment(Pos.CENTER_RIGHT);
+        VBox inputPane = new VBox(10, titlesPane, retailPricePane, costOfGoodsPane, resultsPane, buttonsPane);
         inputPane.setPadding(new Insets(20));
         inputPane.setAlignment(Pos.CENTER_RIGHT);
 
@@ -103,6 +111,8 @@ public class MainPane {
 
         lblRetailPrice = new Label("Retail Price");
         lblCostOfGoods = new Label("Cost of Goods");
+        lblTotalGrossProfit = new Label("Beneficio Total bruto");
+        lblValueTotalGrossProfit = new Label();
 
         fieldRetailPriceReader = new TextField();
         fieldCostOfGoodsReader = new TextField();
