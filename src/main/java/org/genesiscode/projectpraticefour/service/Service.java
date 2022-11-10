@@ -29,32 +29,34 @@ public class Service {
     private final ObservableList<RowTable> observableList;
 
     // Here are the rows
-    private RowTable rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit;
+    private final RowTable rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit;
 
     public Service() {
+        readFileOfSalesData();
         // Initialize the rows
-        rowSalesVolume = new RowTable("Sales Volume", 0.0, 0.0, 0.0, 0.0);
+        rowSalesVolume = new RowTable("Sales Volume",
+                getOneValueOfSalesVolume(READER_DIGEST), getOneValueOfSalesVolume(TIME),
+                getOneValueOfSalesVolume(PEOPLE), getOneValueOfSalesVolume(NATIONAL_GEOGRAPHIC));
         rowRetailPrice = new RowTable("Retail Price", retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
         rowCostOfGoods = new RowTable("Cost of Goods", costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
         rowGrossProfit = new RowTable("Gross Profit", 0.0, 0.0, 0.0, 0.0);
 
         observableList = FXCollections.observableArrayList();
         observableList.addAll(List.of(rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit));
-        try {
-            readFileOfSalesData();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public ObservableList<RowTable> getObservableList() {
         return observableList;
     }
 
-    private void readFileOfSalesData() throws IOException {
+    private void readFileOfSalesData() {
         String route = "src/main/resources/sales-data.txt";
-        List<String> lines = Files.readAllLines(Paths.get(route));
-
+        List<String> lines = List.of();
+        try {
+            lines = Files.readAllLines(Paths.get(route));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         salesDataList = lines.stream()
                 .skip(2)
                 .map(this::create)
@@ -74,7 +76,7 @@ public class Service {
         );
     }
 
-    private double getAverageSalesVolumeOfReader(List<Row> rows, Magazine magazine) {
+    private double getOneValueOfSalesVolume(Magazine magazine) {
         ToDoubleFunction<Row> toDouble = row ->
                 switch (magazine) {
                     case READER_DIGEST -> row.getReaderMagazine();
@@ -83,7 +85,7 @@ public class Service {
                     case NATIONAL_GEOGRAPHIC -> row.getNationalMagazine();
                 };
 
-        return rows.stream()
+        return salesDataList.stream()
                 .mapToDouble(toDouble)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
@@ -92,10 +94,10 @@ public class Service {
 
     private List<Information> getListOfInformation() {
         /* ========== VALUES CALCULATED ========== */
-        double averageReader = getAverageSalesVolumeOfReader(salesDataList, READER_DIGEST);
-        double averageTime = getAverageSalesVolumeOfReader(salesDataList, TIME);
-        double averagePeople = getAverageSalesVolumeOfReader(salesDataList, PEOPLE);
-        double averageNational = getAverageSalesVolumeOfReader(salesDataList, NATIONAL_GEOGRAPHIC);
+        double averageReader = getOneValueOfSalesVolume(READER_DIGEST);
+        double averageTime = getOneValueOfSalesVolume(TIME);
+        double averagePeople = getOneValueOfSalesVolume(PEOPLE);
+        double averageNational = getOneValueOfSalesVolume(NATIONAL_GEOGRAPHIC);
 
         double grossProfitReader = averageReader * (retailPriceReaderMagazine - costOfGoodsReaderMagazine);
         double grossProfitTime = averageTime * (retailPriceTimeMagazine - costOfGoodsTimeMagazine);
