@@ -67,7 +67,7 @@ public class MainPane {
     }
 
     private void buildPane() {
-        Label title = new Label("DULCE  ADA");
+        Label title = new Label("PROYECTO - PRACTICA 4");
         title.setFont(new Font("Arial", 25));
 
         // build input pane
@@ -80,13 +80,14 @@ public class MainPane {
         HBox buttonsPane = new HBox(20, btnLoad, btnStart);
         buttonsPane.setAlignment(Pos.CENTER_RIGHT);
         buttonsPane.setPadding(new Insets(10));
-        HBox resultsPane = new HBox(10, lblTotalGrossProfit, lblValueTotalGrossProfit);
-        resultsPane.setAlignment(Pos.CENTER_RIGHT);
-        VBox inputPane = new VBox(10, titlesPane, retailPricePane, costOfGoodsPane, resultsPane, buttonsPane);
+        VBox inputPane = new VBox(10, titlesPane, retailPricePane, costOfGoodsPane, buttonsPane);
         inputPane.setPadding(new Insets(20));
         inputPane.setAlignment(Pos.CENTER_RIGHT);
 
-        HBox topPane = new HBox(20, inputPane, table);
+        HBox resultsPane = new HBox(10, lblTotalGrossProfit, lblValueTotalGrossProfit);
+        VBox tablePane = new VBox(10, table, resultsPane);
+
+        HBox topPane = new HBox(20, inputPane, tablePane);
         topPane.setAlignment(Pos.CENTER_RIGHT);
         pane = new VBox(10, title, topPane);
         pane.setAlignment(Pos.CENTER);
@@ -117,7 +118,7 @@ public class MainPane {
         lblRetailPrice = new Label("Retail Price");
         lblCostOfGoods = new Label("Cost of Goods");
         lblTotalGrossProfit = new Label("Beneficio Total bruto");
-        lblValueTotalGrossProfit = new Label();
+        lblValueTotalGrossProfit = new Label("XXX");
 
         fieldRetailPriceReader = new TextField();
         fieldCostOfGoodsReader = new TextField();
