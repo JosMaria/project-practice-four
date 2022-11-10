@@ -86,7 +86,9 @@ public class MainPane {
         inputPane.setPadding(new Insets(20));
         inputPane.setAlignment(Pos.CENTER_RIGHT);
 
-        pane = new VBox(10, title, inputPane, table);
+        HBox topPane = new HBox(20, inputPane, table);
+        topPane.setAlignment(Pos.CENTER_RIGHT);
+        pane = new VBox(10, title, topPane);
         pane.setAlignment(Pos.CENTER);
         pane.setPadding(new Insets(10, 30, 30, 30));
     }
@@ -94,13 +96,16 @@ public class MainPane {
     private void buildTable() {
         table = new TableView<>();
         table.getColumns().addAll(List.of(
-                column("", "value", 120),
-                column("Reader's Digest", "readerMagazine", 100),
-                column("Time", "timeMagazine", 100),
-                column("People", "peopleMagazine", 100),
-                column("National geographic", "nationalMagazine", 150)
+                column("", "value", 110),
+                column("Reader's\nDigest", "readerMagazine", 90),
+                column("Time", "timeMagazine", 85),
+                column("People", "peopleMagazine", 85),
+                column("National\nGeographic", "nationalMagazine", 90)
         ));
         table.setItems(service.getObservableList());
+        table.setEditable(false);
+        table.setMaxHeight(140);
+        table.setMinWidth(470);
     }
 
     public void buildPaneInput() {
