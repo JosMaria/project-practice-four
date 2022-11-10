@@ -16,6 +16,16 @@ import static org.genesiscode.projectpraticefour.service.Magazine.*;
 
 public class Service {
 
+    /* ========== INPUT DATA FOR THE USER ========== */
+    double retailPriceReaderMagazine = 4.95;
+    double retailPriceTimeMagazine = 7.95;
+    double retailPricePeopleMagazine = 3.95;
+    double retailPriceNationalMagazine = 5.95;
+
+    double costOfGoodsReaderMagazine = 2.20;
+    double costOfGoodsTimeMagazine = 3.80;
+    double costOfGoodsPeopleMagazine = 1.95;
+    double costOfGoodsNationalMagazine = 2.40;
     private List<Row> salesDataList;
 
     public Service() {
@@ -87,17 +97,6 @@ public class Service {
         double averagePeople = getAverageSalesVolumeOfReader(salesDataList, PEOPLE);
         double averageNational = getAverageSalesVolumeOfReader(salesDataList, NATIONAL_GEOGRAPHIC);
 
-        /* ========== INPUT DATA FOR THE USER ========== */
-        double retailPriceReaderMagazine = 4.95;
-        double retailPriceTimeMagazine = 7.95;
-        double retailPricePeopleMagazine = 3.95;
-        double retailPriceNationalMagazine = 5.95;
-
-        double costOfGoodsReaderMagazine = 2.20;
-        double costOfGoodsTimeMagazine = 3.80;
-        double costOfGoodsPeopleMagazine = 1.95;
-        double costOfGoodsNationalMagazine = 2.40;
-
         double grossProfitReader = averageReader * (retailPriceReaderMagazine - costOfGoodsReaderMagazine);
         double grossProfitTime = averageTime * (retailPriceTimeMagazine - costOfGoodsTimeMagazine);
         double grossProfitPeople = averagePeople * (retailPricePeopleMagazine - costOfGoodsPeopleMagazine);
@@ -109,6 +108,20 @@ public class Service {
                 new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, grossProfitPeople),
                 new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, grossProfitNational)
         );
+    }
+
+    public void loadValues(double retailPriceReaderMagazine, double retailPriceTimeMagazine, double retailPricePeopleMagazine,
+                            double retailPriceNationalMagazine, double costOfGoodsReaderMagazine, double costOfGoodsTimeMagazine,
+                            double costOfGoodsPeopleMagazine, double costOfGoodsNationalMagazine) {
+        this.retailPriceReaderMagazine = retailPriceReaderMagazine;
+        this.retailPriceTimeMagazine = retailPriceTimeMagazine;
+        this.retailPricePeopleMagazine = retailPricePeopleMagazine;
+        this.retailPriceNationalMagazine = retailPriceNationalMagazine;
+
+        this.costOfGoodsReaderMagazine = costOfGoodsReaderMagazine;
+        this.costOfGoodsTimeMagazine = costOfGoodsTimeMagazine;
+        this.costOfGoodsPeopleMagazine = costOfGoodsPeopleMagazine;
+        this.costOfGoodsNationalMagazine = costOfGoodsNationalMagazine;
     }
 
     private void convertMatrix(List<Information> informationList) {
