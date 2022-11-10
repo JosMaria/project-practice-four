@@ -16,23 +16,39 @@ import static org.genesiscode.projectpraticefour.service.Magazine.*;
 public class Service {
 
     /* ========== INPUT DATA FOR THE USER ========== */
-    double retailPriceReaderMagazine = 4.95;
-    double retailPriceTimeMagazine = 7.95;
-    double retailPricePeopleMagazine = 3.95;
-    double retailPriceNationalMagazine = 5.95;
+    Double retailPriceReaderMagazine = 0.0;
+    Double retailPriceTimeMagazine = 0.0;
+    Double retailPricePeopleMagazine = 0.0;
+    Double retailPriceNationalMagazine = 0.0;
 
-    double costOfGoodsReaderMagazine = 2.20;
-    double costOfGoodsTimeMagazine = 3.80;
-    double costOfGoodsPeopleMagazine = 1.95;
-    double costOfGoodsNationalMagazine = 2.40;
+    Double costOfGoodsReaderMagazine = 0.0;
+    Double costOfGoodsTimeMagazine = 0.0;
+    Double costOfGoodsPeopleMagazine = 0.0;
+    Double costOfGoodsNationalMagazine = 0.0;
     private List<Row> salesDataList;
+    private final ObservableList<RowTable> observableList;
+
+    // Here are the rows
+    private RowTable rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit;
 
     public Service() {
+        // Initialize the rows
+        rowSalesVolume = new RowTable("Sales Volume", 0.0, 0.0, 0.0, 0.0);
+        rowRetailPrice = new RowTable("Retail Price", retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
+        rowCostOfGoods = new RowTable("Cost of Goods", costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
+        rowGrossProfit = new RowTable("Gross Profit", 0.0, 0.0, 0.0, 0.0);
+
+        observableList = FXCollections.observableArrayList();
+        observableList.addAll(List.of(rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit));
         try {
             readFileOfSalesData();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public ObservableList<RowTable> getObservableList() {
+        return observableList;
     }
 
     private void readFileOfSalesData() throws IOException {
@@ -72,21 +88,6 @@ public class Service {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
-
-    public ObservableList<RowTable> getObservableList() {
-        ObservableList<RowTable> list = FXCollections.observableArrayList();
-        RowTable salesVolumeRow = new RowTable(0, 0, 0, 0);
-        RowTable retailsPriceRow = new RowTable(0, 0, 0, 0);
-        RowTable costOfGoodsRow = new RowTable(0, 0, 0, 0);
-        RowTable grossProfitRow = new RowTable(0, 0, 0, 0);
-        salesVolumeRow.setValue("Sales Volume");
-        retailsPriceRow.setValue("Retails Price");
-        costOfGoodsRow.setValue("Cost of Goods");
-        grossProfitRow.setValue("Gross Profit");
-
-        list.addAll(List.of(salesVolumeRow, retailsPriceRow, costOfGoodsRow, grossProfitRow));
-        return list;
-    }
     //        double totalGrossProfit = grossProfitReader + grossProfitTime + grossProfitPeople + grossProfitNational;
 
     private List<Information> getListOfInformation() {
@@ -109,9 +110,10 @@ public class Service {
         );
     }
 
-    public void loadValues(double retailPriceReaderMagazine, double retailPriceTimeMagazine, double retailPricePeopleMagazine,
-                            double retailPriceNationalMagazine, double costOfGoodsReaderMagazine, double costOfGoodsTimeMagazine,
-                            double costOfGoodsPeopleMagazine, double costOfGoodsNationalMagazine) {
+    public void loadValues(Double retailPriceReaderMagazine, Double retailPriceTimeMagazine, Double retailPricePeopleMagazine,
+                            Double retailPriceNationalMagazine, Double costOfGoodsReaderMagazine, Double costOfGoodsTimeMagazine,
+                            Double costOfGoodsPeopleMagazine, Double costOfGoodsNationalMagazine) {
+
         this.retailPriceReaderMagazine = retailPriceReaderMagazine;
         this.retailPriceTimeMagazine = retailPriceTimeMagazine;
         this.retailPricePeopleMagazine = retailPricePeopleMagazine;
@@ -121,6 +123,8 @@ public class Service {
         this.costOfGoodsTimeMagazine = costOfGoodsTimeMagazine;
         this.costOfGoodsPeopleMagazine = costOfGoodsPeopleMagazine;
         this.costOfGoodsNationalMagazine = costOfGoodsNationalMagazine;
+        rowRetailPrice.setAllField(retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
+        rowCostOfGoods.setAllField(costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
     }
 
     private void convertMatrix(List<Information> informationList) {

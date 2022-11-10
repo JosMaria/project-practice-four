@@ -60,7 +60,7 @@ public class MainPane {
 
             service.loadValues(retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine,
                     costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
-
+            table.refresh();
         } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
         }
@@ -103,7 +103,7 @@ public class MainPane {
                 column("National\nGeographic", "nationalMagazine", 90)
         ));
         table.setItems(service.getObservableList());
-        table.setEditable(false);
+        table.setEditable(true);
         table.setMaxHeight(140);
         table.setMinWidth(470);
     }
