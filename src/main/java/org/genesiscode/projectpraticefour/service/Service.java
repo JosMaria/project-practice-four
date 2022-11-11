@@ -16,30 +16,29 @@ import static org.genesiscode.projectpraticefour.service.Magazine.*;
 public class Service {
 
     /* ========== INPUT DATA FOR THE USER ========== */
-    Double retailPriceReaderMagazine = 0.0;
-    Double retailPriceTimeMagazine = 0.0;
-    Double retailPricePeopleMagazine = 0.0;
-    Double retailPriceNationalMagazine = 0.0;
-
-    Double costOfGoodsReaderMagazine = 0.0;
-    Double costOfGoodsTimeMagazine = 0.0;
-    Double costOfGoodsPeopleMagazine = 0.0;
-    Double costOfGoodsNationalMagazine = 0.0;
+    private Double retailPriceReaderMagazine = 0.0, retailPriceTimeMagazine = 0.0, retailPricePeopleMagazine = 0.0, retailPriceNationalMagazine = 0.0, costOfGoodsReaderMagazine = 0.0, costOfGoodsTimeMagazine = 0.0, costOfGoodsPeopleMagazine = 0.0, costOfGoodsNationalMagazine = 0.0;
     private List<Row> salesDataList;
     private final ObservableList<RowTable> observableList;
-
-    // Here are the rows
     private final RowTable rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit;
+
+    private Double grossProfitReader = 0.0, grossProfitTime = 0.0, grossProfitPeople = 0.0, grossProfitNational = 0.0;
+    private double salesVolumeReader, salesVolumeTime, salesVolumePeople, salesVolumeNational;
+    private double totalGrossProfit = 0;
 
     public Service() {
         readFileOfSalesData();
         // Initialize the rows
+        this.salesVolumeReader = getOneValueOfSalesVolume(READER_DIGEST);
+        this.salesVolumeTime = getOneValueOfSalesVolume(TIME);
+        this.salesVolumePeople = getOneValueOfSalesVolume(PEOPLE);
+        this.salesVolumeNational = getOneValueOfSalesVolume(NATIONAL_GEOGRAPHIC);
+
         rowSalesVolume = new RowTable("Sales Volume",
-                getOneValueOfSalesVolume(READER_DIGEST), getOneValueOfSalesVolume(TIME),
-                getOneValueOfSalesVolume(PEOPLE), getOneValueOfSalesVolume(NATIONAL_GEOGRAPHIC));
+                salesVolumeReader, salesVolumeTime,
+                salesVolumePeople, salesVolumeNational);
         rowRetailPrice = new RowTable("Retail Price", retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
         rowCostOfGoods = new RowTable("Cost of Goods", costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
-        rowGrossProfit = new RowTable("Gross Profit", 0.0, 0.0, 0.0, 0.0);
+        rowGrossProfit = new RowTable("Gross Profit", grossProfitReader, grossProfitTime, grossProfitPeople, grossProfitNational);
 
         observableList = FXCollections.observableArrayList();
         observableList.addAll(List.of(rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit));
@@ -47,6 +46,10 @@ public class Service {
 
     public ObservableList<RowTable> getObservableList() {
         return observableList;
+    }
+
+    public double getTotalGrossProfit() {
+        return totalGrossProfit;
     }
 
     private void readFileOfSalesData() {
@@ -115,7 +118,6 @@ public class Service {
     public void loadValues(Double retailPriceReaderMagazine, Double retailPriceTimeMagazine, Double retailPricePeopleMagazine,
                             Double retailPriceNationalMagazine, Double costOfGoodsReaderMagazine, Double costOfGoodsTimeMagazine,
                             Double costOfGoodsPeopleMagazine, Double costOfGoodsNationalMagazine) {
-
         this.retailPriceReaderMagazine = retailPriceReaderMagazine;
         this.retailPriceTimeMagazine = retailPriceTimeMagazine;
         this.retailPricePeopleMagazine = retailPricePeopleMagazine;
@@ -127,6 +129,16 @@ public class Service {
         this.costOfGoodsNationalMagazine = costOfGoodsNationalMagazine;
         rowRetailPrice.setAllField(retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
         rowCostOfGoods.setAllField(costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
+
+        rowGrossProfit.setAllField(
+                 salesVolumeReader * (this.retailPriceReaderMagazine - this.costOfGoodsReaderMagazine),
+                salesVolumeTime * (this.retailPriceTimeMagazine - this.costOfGoodsTimeMagazine),
+                salesVolumePeople * (this.retailPricePeopleMagazine - this.costOfGoodsPeopleMagazine),
+                salesVolumeNational * (this.retailPriceNationalMagazine - this.costOfGoodsNationalMagazine));
+
+        totalGrossProfit =
+                rowGrossProfit.getReaderMagazine() + rowGrossProfit.getTimeMagazine()
+                        + rowGrossProfit.getPeopleMagazine() + rowGrossProfit.getNationalMagazine();
     }
 
     private void convertMatrix(List<Information> informationList) {

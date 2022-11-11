@@ -60,6 +60,7 @@ public class MainPane {
 
             service.loadValues(retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine,
                     costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
+            lblValueTotalGrossProfit.setText(String.valueOf(service.getTotalGrossProfit()));
             table.refresh();
         } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
