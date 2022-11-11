@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
+import static org.genesiscode.projectpraticefour.service.Decimal.extractDecimals;
 import static org.genesiscode.projectpraticefour.service.Magazine.*;
 
 public class Service {
@@ -22,7 +23,7 @@ public class Service {
     private final RowTable rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit;
 
     private Double grossProfitReader = 0.0, grossProfitTime = 0.0, grossProfitPeople = 0.0, grossProfitNational = 0.0;
-    private double salesVolumeReader, salesVolumeTime, salesVolumePeople, salesVolumeNational;
+    private final double salesVolumeReader, salesVolumeTime, salesVolumePeople, salesVolumeNational;
     private double totalGrossProfit = 0;
 
     public Service() {
@@ -33,9 +34,7 @@ public class Service {
         this.salesVolumePeople = getOneValueOfSalesVolume(PEOPLE);
         this.salesVolumeNational = getOneValueOfSalesVolume(NATIONAL_GEOGRAPHIC);
 
-        rowSalesVolume = new RowTable("Sales Volume",
-                salesVolumeReader, salesVolumeTime,
-                salesVolumePeople, salesVolumeNational);
+        rowSalesVolume = new RowTable("Sales Volume", salesVolumeReader, salesVolumeTime, salesVolumePeople, salesVolumeNational);
         rowRetailPrice = new RowTable("Retail Price", retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
         rowCostOfGoods = new RowTable("Cost of Goods", costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
         rowGrossProfit = new RowTable("Gross Profit", grossProfitReader, grossProfitTime, grossProfitPeople, grossProfitNational);
@@ -93,27 +92,6 @@ public class Service {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
-    //        double totalGrossProfit = grossProfitReader + grossProfitTime + grossProfitPeople + grossProfitNational;
-
-    private List<Information> getListOfInformation() {
-        /* ========== VALUES CALCULATED ========== */
-        double averageReader = getOneValueOfSalesVolume(READER_DIGEST);
-        double averageTime = getOneValueOfSalesVolume(TIME);
-        double averagePeople = getOneValueOfSalesVolume(PEOPLE);
-        double averageNational = getOneValueOfSalesVolume(NATIONAL_GEOGRAPHIC);
-
-        double grossProfitReader = averageReader * (retailPriceReaderMagazine - costOfGoodsReaderMagazine);
-        double grossProfitTime = averageTime * (retailPriceTimeMagazine - costOfGoodsTimeMagazine);
-        double grossProfitPeople = averagePeople * (retailPricePeopleMagazine - costOfGoodsPeopleMagazine);
-        double grossProfitNational = averageNational * (retailPriceNationalMagazine - costOfGoodsNationalMagazine);
-
-        return List.of(
-                new Information(averageReader, retailPriceReaderMagazine, costOfGoodsReaderMagazine, grossProfitReader),
-                new Information(averageTime, retailPriceTimeMagazine, costOfGoodsTimeMagazine, grossProfitTime),
-                new Information(averagePeople, retailPricePeopleMagazine, costOfGoodsPeopleMagazine, grossProfitPeople),
-                new Information(averageNational, retailPriceNationalMagazine, costOfGoodsNationalMagazine, grossProfitNational)
-        );
-    }
 
     public void loadValues(Double retailPriceReaderMagazine, Double retailPriceTimeMagazine, Double retailPricePeopleMagazine,
                             Double retailPriceNationalMagazine, Double costOfGoodsReaderMagazine, Double costOfGoodsTimeMagazine,
@@ -131,59 +109,13 @@ public class Service {
         rowCostOfGoods.setAllField(costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
 
         rowGrossProfit.setAllField(
-                 salesVolumeReader * (this.retailPriceReaderMagazine - this.costOfGoodsReaderMagazine),
-                salesVolumeTime * (this.retailPriceTimeMagazine - this.costOfGoodsTimeMagazine),
-                salesVolumePeople * (this.retailPricePeopleMagazine - this.costOfGoodsPeopleMagazine),
-                salesVolumeNational * (this.retailPriceNationalMagazine - this.costOfGoodsNationalMagazine));
+                extractDecimals(2, salesVolumeReader * (this.retailPriceReaderMagazine - this.costOfGoodsReaderMagazine)),
+                extractDecimals(2, salesVolumeTime * (this.retailPriceTimeMagazine - this.costOfGoodsTimeMagazine)),
+                extractDecimals(2, salesVolumePeople * (this.retailPricePeopleMagazine - this.costOfGoodsPeopleMagazine)),
+                extractDecimals(2, salesVolumeNational * (this.retailPriceNationalMagazine - this.costOfGoodsNationalMagazine))
+        );
 
-        totalGrossProfit =
-                rowGrossProfit.getReaderMagazine() + rowGrossProfit.getTimeMagazine()
-                        + rowGrossProfit.getPeopleMagazine() + rowGrossProfit.getNationalMagazine();
-    }
-
-    private void convertMatrix(List<Information> informationList) {
-        List<List<Double>> list = List.of(List.of(), List.of(), List.of(), List.of());
-        int index = 0;
-        for (Information inf : informationList) {
-            List<Double> element = list.get(index);
-            element.addAll(List.of(inf.getSalesVolume(), inf.getRetailPrice(), inf.getCostOfGoods(), inf.getGrossProfit()));
-            index++;
-        }
-
-        for (List<Double> element : list) {
-            for (double value : element) {
-                System.out.printf("%s  ", value);
-            }
-            System.out.println();
-        }
-    }
-
-    public static void main(String[] args) {
-
-
-        /*String[][] matrix = {
-                {"sv", "rp", "cp", "gp"},
-                {"sv", "rp", "cp", "gp"},
-                {"sv", "rp", "cp", "gp"},
-                {"sv", "rp", "cp", "gp"}
-        };
-
-        List<List<String>> matrixInput = List.of();
-
-        String[][] result = new String[matrix.length][matrix[0].length];
-
-        for (int i = 0; i < matrix.length; i++) {
-            for(int j = 0; j < matrix[i].length; j++) {
-                result[j][i] = matrix[i][j];
-            }
-        }
-
-        for (int i = 0; i < matrix.length; i++) {
-            for(int j = 0; j < matrix[i].length; j++) {
-                System.out.print(result[i][j] + "  ");
-            }
-            System.out.println();
-        }*/
-
+        totalGrossProfit = extractDecimals(2, rowGrossProfit.getReaderMagazine() + rowGrossProfit.getTimeMagazine()
+                + rowGrossProfit.getPeopleMagazine() + rowGrossProfit.getNationalMagazine());
     }
 }

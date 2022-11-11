@@ -90,6 +90,8 @@ public class MainPane {
 
         HBox topPane = new HBox(20, inputPane, tablePane);
         topPane.setAlignment(Pos.CENTER_RIGHT);
+        topPane.setPadding(new Insets(20));
+
         pane = new VBox(10, title, topPane);
         pane.setAlignment(Pos.CENTER);
         pane.setPadding(new Insets(10, 30, 30, 30));
