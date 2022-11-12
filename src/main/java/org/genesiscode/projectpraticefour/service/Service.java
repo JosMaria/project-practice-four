@@ -17,13 +17,14 @@ import static org.genesiscode.projectpraticefour.service.Magazine.*;
 public class Service {
 
     /* ========== INPUT DATA FOR THE USER ========== */
-    private Double retailPriceReaderMagazine = 0.0, retailPriceTimeMagazine = 0.0, retailPricePeopleMagazine = 0.0, retailPriceNationalMagazine = 0.0, costOfGoodsReaderMagazine = 0.0, costOfGoodsTimeMagazine = 0.0, costOfGoodsPeopleMagazine = 0.0, costOfGoodsNationalMagazine = 0.0;
+    private Double retailPriceReaderMagazine = 0.0, retailPriceTimeMagazine = 0.0, retailPricePeopleMagazine = 0.0, retailPriceNationalMagazine = 0.0,
+            costOfGoodsReaderMagazine = 0.0, costOfGoodsTimeMagazine = 0.0, costOfGoodsPeopleMagazine = 0.0, costOfGoodsNationalMagazine = 0.0;
     private List<Row> salesDataList;
     private final ObservableList<RowTable> observableList;
     private final RowTable rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit;
 
-    private Double grossProfitReader = 0.0, grossProfitTime = 0.0, grossProfitPeople = 0.0, grossProfitNational = 0.0;
-    private final double salesVolumeReader, salesVolumeTime, salesVolumePeople, salesVolumeNational;
+    private double grossProfitReader, grossProfitTime, grossProfitPeople, grossProfitNational = 0;
+    private double salesVolumeReader, salesVolumeTime, salesVolumePeople, salesVolumeNational;
     private double totalGrossProfit = 0;
 
     public Service() {
@@ -54,11 +55,13 @@ public class Service {
     private void readFileOfSalesData() {
         String route = "src/main/resources/sales-data.txt";
         List<String> lines = List.of();
+
         try {
             lines = Files.readAllLines(Paths.get(route));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+
         salesDataList = lines.stream()
                 .skip(2)
                 .map(this::create)
@@ -79,6 +82,25 @@ public class Service {
     }
 
     private double getOneValueOfSalesVolume(Magazine magazine) {
+        OptionComboBox option = OptionComboBox.FIRST;
+        return optionSelect(magazine, option);
+    }
+
+    public void changeOption(OptionComboBox option) {
+        rowSalesVolume.setAllField(
+                optionSelect(READER_DIGEST, option),
+                optionSelect(TIME, option),
+                optionSelect(PEOPLE, option),
+                optionSelect(NATIONAL_GEOGRAPHIC, option)
+        );
+
+        salesVolumeReader = rowSalesVolume.getReaderMagazine();
+        salesVolumeTime = rowSalesVolume.getTimeMagazine();
+        salesVolumePeople = rowSalesVolume.getPeopleMagazine();
+        salesVolumeNational = rowSalesVolume.getNationalMagazine();
+    }
+
+    private double optionSelect(Magazine magazine, OptionComboBox option) {
         ToDoubleFunction<Row> toDouble = row ->
                 switch (magazine) {
                     case READER_DIGEST -> row.getReaderMagazine();
@@ -87,10 +109,32 @@ public class Service {
                     case NATIONAL_GEOGRAPHIC -> row.getNationalMagazine();
                 };
 
-        return salesDataList.stream()
-                .mapToDouble(toDouble)
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+        double result = switch (option) {
+            case FIRST ->
+                    salesDataList.stream()
+                            .mapToDouble(toDouble)
+                            .findFirst()
+                            .orElseThrow(IllegalArgumentException::new);
+
+            case ANY ->
+                    salesDataList.stream()
+                            .mapToDouble(toDouble)
+                            .findAny()
+                            .orElseThrow(IllegalArgumentException::new);
+
+            case AVERAGE ->
+                    salesDataList.stream()
+                            .mapToDouble(toDouble)
+                            .average()
+                            .orElseThrow(IllegalArgumentException::new);
+        };
+        System.out.println(
+            salesDataList.stream()
+                            .mapToDouble(toDouble)
+                            .findAny()
+                            .orElseThrow());
+        return Decimal.extractDecimals(2, result);
+
     }
 
     public void loadValues(Double retailPriceReaderMagazine, Double retailPriceTimeMagazine, Double retailPricePeopleMagazine,
@@ -107,13 +151,20 @@ public class Service {
         this.costOfGoodsNationalMagazine = costOfGoodsNationalMagazine;
         rowRetailPrice.setAllField(retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine);
         rowCostOfGoods.setAllField(costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
+    }
 
+    public void start() {
         rowGrossProfit.setAllField(
                 extractDecimals(2, salesVolumeReader * (this.retailPriceReaderMagazine - this.costOfGoodsReaderMagazine)),
                 extractDecimals(2, salesVolumeTime * (this.retailPriceTimeMagazine - this.costOfGoodsTimeMagazine)),
                 extractDecimals(2, salesVolumePeople * (this.retailPricePeopleMagazine - this.costOfGoodsPeopleMagazine)),
                 extractDecimals(2, salesVolumeNational * (this.retailPriceNationalMagazine - this.costOfGoodsNationalMagazine))
         );
+
+        grossProfitReader = rowGrossProfit.getReaderMagazine();
+        grossProfitTime = rowGrossProfit.getTimeMagazine();
+        grossProfitPeople = rowGrossProfit.getPeopleMagazine();
+        grossProfitNational = rowGrossProfit.getNationalMagazine();
 
         totalGrossProfit = extractDecimals(2, rowGrossProfit.getReaderMagazine() + rowGrossProfit.getTimeMagazine()
                 + rowGrossProfit.getPeopleMagazine() + rowGrossProfit.getNationalMagazine());

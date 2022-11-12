@@ -1,5 +1,7 @@
 package org.genesiscode.projectpraticefour.view;
 
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -7,9 +9,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import org.genesiscode.projectpraticefour.service.OptionComboBox;
 import org.genesiscode.projectpraticefour.service.Service;
 
 import java.util.List;
+
+import static org.genesiscode.projectpraticefour.service.OptionComboBox.*;
 
 public class MainPane {
 
@@ -22,6 +27,7 @@ public class MainPane {
     private TextField fieldRetailPriceReader, fieldRetailPriceTime, fieldRetailPricePeople, fieldRetailPriceNational,
             fieldCostOfGoodsReader, fieldCostOfGoodsTime, fieldCostOfGoodsPeople, fieldCostOfGoodsNational;
     private Button btnLoad, btnStart;
+    private ComboBox<OptionComboBox> comboBox;
 
     private MainPane() {
         service = new Service();
@@ -43,7 +49,24 @@ public class MainPane {
         btnLoad = new Button("Cargar");
         btnLoad.setOnAction(actionEvent -> btn_click_load());
         btnStart = new Button("Comenzar");
-        btnStart.setOnAction(actionEvent -> System.out.println("comenzar"));
+        btnStart.setOnAction(actionEvent -> btn_click_start());
+
+        comboBox = new ComboBox<>(FXCollections.observableArrayList(List.of(FIRST, ANY, AVERAGE)));
+        comboBox.setValue(FIRST);
+        comboBox.setOnAction(this::combo_box_click);
+    }
+
+    public void btn_click_start() {
+        service.start();
+        table.refresh();
+    }
+
+    private void combo_box_click(ActionEvent actionEvent) {
+        @SuppressWarnings("unchecked")
+        ComboBox<OptionComboBox> source = (ComboBox<OptionComboBox>) actionEvent.getSource();
+        service.changeOption(source.getValue());
+        table.refresh();
+        lblValueTotalGrossProfit.setText(String.valueOf(service.getTotalGrossProfit()));
     }
 
     private void btn_click_load() {
@@ -60,7 +83,6 @@ public class MainPane {
 
             service.loadValues(retailPriceReaderMagazine, retailPriceTimeMagazine, retailPricePeopleMagazine, retailPriceNationalMagazine,
                     costOfGoodsReaderMagazine, costOfGoodsTimeMagazine, costOfGoodsPeopleMagazine, costOfGoodsNationalMagazine);
-            lblValueTotalGrossProfit.setText(String.valueOf(service.getTotalGrossProfit()));
             table.refresh();
         } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
@@ -88,7 +110,7 @@ public class MainPane {
         HBox resultsPane = new HBox(10, lblTotalGrossProfit, lblValueTotalGrossProfit);
         VBox tablePane = new VBox(10, table, resultsPane);
 
-        HBox topPane = new HBox(20, inputPane, tablePane);
+        HBox topPane = new HBox(20, inputPane, comboBox, tablePane);
         topPane.setAlignment(Pos.CENTER_RIGHT);
         topPane.setPadding(new Insets(20));
 
