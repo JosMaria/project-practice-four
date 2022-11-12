@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
+import java.util.stream.DoubleStream;
 
 import static org.genesiscode.projectpraticefour.service.Decimal.extractDecimals;
 import static org.genesiscode.projectpraticefour.service.Magazine.*;
@@ -44,30 +45,6 @@ public class Service {
         observableList.addAll(List.of(rowSalesVolume, rowRetailPrice, rowCostOfGoods, rowGrossProfit));
     }
 
-    public ObservableList<RowTable> getObservableList() {
-        return observableList;
-    }
-
-    public double getSalesVolumeReader() {
-        return salesVolumeReader;
-    }
-
-    public double getSalesVolumeTime() {
-        return salesVolumeTime;
-    }
-
-    public double getSalesVolumePeople() {
-        return salesVolumePeople;
-    }
-
-    public double getSalesVolumeNational() {
-        return salesVolumeNational;
-    }
-
-    public double getTotalGrossProfit() {
-        return totalGrossProfit;
-    }
-
     private void readFileOfSalesData() {
         String route = "src/main/resources/sales-data.txt";
         List<String> lines = List.of();
@@ -95,6 +72,22 @@ public class Service {
                 Double.parseDouble(values.get(2)),
                 Double.parseDouble(values.get(3))
         );
+    }
+
+    public static void main(String[] args) {
+        String route = "src/main/resources/sales-data.txt";
+        List<String> lines = List.of();
+
+        try {
+            lines = Files.readAllLines(Paths.get(route));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        List<String> list = lines.stream()
+                .skip(2)
+                .toList();
+
+        System.out.println(list.get((int) Math.floor(Math.random() * (list.size() + 1))));
     }
 
     private double getOneValueOfSalesVolume(Magazine magazine) {
@@ -132,11 +125,7 @@ public class Service {
                             .findFirst()
                             .orElseThrow(IllegalArgumentException::new);
 
-            case ANY ->
-                    salesDataList.stream()
-                            .mapToDouble(toDouble)
-                            .findAny()
-                            .orElseThrow(IllegalArgumentException::new);
+            case ANY -> getValueAny(magazine);
 
             case AVERAGE ->
                     salesDataList.stream()
@@ -144,13 +133,19 @@ public class Service {
                             .average()
                             .orElseThrow(IllegalArgumentException::new);
         };
-        System.out.println(
-            salesDataList.stream()
-                            .mapToDouble(toDouble)
-                            .findAny()
-                            .orElseThrow());
+
         return Decimal.extractDecimals(2, result);
 
+    }
+
+    private double getValueAny(Magazine magazine) {
+        Row row = salesDataList.get((int) Math.floor(Math.random() * (salesDataList.size() + 1)));
+        return switch (magazine) {
+            case READER_DIGEST -> row.getReaderMagazine();
+            case TIME -> row.getTimeMagazine();
+            case PEOPLE -> row.getPeopleMagazine();
+            case NATIONAL_GEOGRAPHIC -> row.getNationalMagazine();
+        };
     }
 
     public void loadValues(Double retailPriceReaderMagazine, Double retailPriceTimeMagazine, Double retailPricePeopleMagazine,
@@ -184,5 +179,29 @@ public class Service {
 
         totalGrossProfit = extractDecimals(2, rowGrossProfit.getReaderMagazine() + rowGrossProfit.getTimeMagazine()
                 + rowGrossProfit.getPeopleMagazine() + rowGrossProfit.getNationalMagazine());
+    }
+
+    public ObservableList<RowTable> getObservableList() {
+        return observableList;
+    }
+
+    public double getSalesVolumeReader() {
+        return salesVolumeReader;
+    }
+
+    public double getSalesVolumeTime() {
+        return salesVolumeTime;
+    }
+
+    public double getSalesVolumePeople() {
+        return salesVolumePeople;
+    }
+
+    public double getSalesVolumeNational() {
+        return salesVolumeNational;
+    }
+
+    public double getTotalGrossProfit() {
+        return totalGrossProfit;
     }
 }

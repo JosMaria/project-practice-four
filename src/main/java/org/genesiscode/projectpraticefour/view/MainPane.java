@@ -191,7 +191,9 @@ public class MainPane {
         lblRetailPrice = new Label("Retail Price");
         lblCostOfGoods = new Label("Cost of Goods");
         lblTotalGrossProfit = new Label("Beneficio Total bruto");
-        lblValueTotalGrossProfit = new Label("XXX");
+        lblTotalGrossProfit.setFont(new Font("Arial Bold", 14));
+        lblValueTotalGrossProfit = new Label("");
+        lblValueTotalGrossProfit.setFont(new Font("Arial Bold", 14));
 
         fieldRetailPriceReader = new TextField();
         fieldCostOfGoodsReader = new TextField();
