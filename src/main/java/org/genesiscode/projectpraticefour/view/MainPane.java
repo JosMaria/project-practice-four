@@ -4,6 +4,11 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -28,6 +33,8 @@ public class MainPane {
             fieldCostOfGoodsReader, fieldCostOfGoodsTime, fieldCostOfGoodsPeople, fieldCostOfGoodsNational;
     private Button btnLoad, btnStart;
     private ComboBox<OptionComboBox> comboBox;
+    private Group group;
+    private BarChart<String, Number> barChart;
 
     private MainPane() {
         service = new Service();
@@ -43,6 +50,22 @@ public class MainPane {
         return pane;
     }
 
+    private void buildGraphicBar() {
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setCategories(FXCollections.observableArrayList(List.of("Magazine")));
+        xAxis.setLabel("Revistas que se venden");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Cantidad");
+
+        barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Volumen de ventas");
+        barChart.setBarGap(30);
+        barChart.setAnimated(true);
+        barChart.getData().addAll(loadDataGraphic());
+        group = new Group(barChart);
+    }
+
     private void loadControls() {
         buildPaneInput();
         buildTable();
@@ -54,11 +77,36 @@ public class MainPane {
         comboBox = new ComboBox<>(FXCollections.observableArrayList(List.of(FIRST, ANY, AVERAGE)));
         comboBox.setValue(FIRST);
         comboBox.setOnAction(this::combo_box_click);
+
+        buildGraphicBar();
     }
 
     public void btn_click_start() {
         service.start();
+        lblValueTotalGrossProfit.setText(String.valueOf(service.getTotalGrossProfit()));
+        barChart.setData(FXCollections.observableList(loadDataGraphic()));
         table.refresh();
+    }
+
+    private List<XYChart.Series<String, Number>> loadDataGraphic() {
+        //Prepare XYChart.Series objects by setting data
+        XYChart.Series<String, Number> seriesReader = new XYChart.Series<>();
+        seriesReader.setName("READER");
+        seriesReader.getData().add(new XYChart.Data<>("Magazine", service.getSalesVolumeReader()));
+        // 562 362 646 508
+        XYChart.Series<String, Number> seriesTime = new XYChart.Series<>();
+        seriesTime.setName("TIME");
+        seriesTime.getData().add(new XYChart.Data<>("Magazine", service.getSalesVolumeTime()));
+
+        XYChart.Series<String, Number> seriesPeople = new XYChart.Series<>();
+        seriesPeople.setName("PEOPLE");
+        seriesPeople.getData().add(new XYChart.Data<>("Magazine", service.getSalesVolumePeople()));
+
+        XYChart.Series<String, Number> seriesNational = new XYChart.Series<>();
+        seriesNational.setName("NATIONAL");
+        seriesNational.getData().add(new XYChart.Data<>("Magazine", service.getSalesVolumeNational()));
+
+        return List.of(seriesReader, seriesTime, seriesPeople, seriesNational);
     }
 
     private void combo_box_click(ActionEvent actionEvent) {
@@ -114,7 +162,7 @@ public class MainPane {
         topPane.setAlignment(Pos.CENTER_RIGHT);
         topPane.setPadding(new Insets(20));
 
-        pane = new VBox(10, title, topPane);
+        pane = new VBox(10, title, topPane, group);
         pane.setAlignment(Pos.CENTER);
         pane.setPadding(new Insets(10, 30, 30, 30));
     }

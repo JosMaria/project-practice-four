@@ -48,6 +48,22 @@ public class Service {
         return observableList;
     }
 
+    public double getSalesVolumeReader() {
+        return salesVolumeReader;
+    }
+
+    public double getSalesVolumeTime() {
+        return salesVolumeTime;
+    }
+
+    public double getSalesVolumePeople() {
+        return salesVolumePeople;
+    }
+
+    public double getSalesVolumeNational() {
+        return salesVolumeNational;
+    }
+
     public double getTotalGrossProfit() {
         return totalGrossProfit;
     }
